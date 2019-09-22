@@ -1,0 +1,28 @@
+Lab 5 - ICMP
+
+Scopul laboratorului este implementarea unui utilitar asemănător cu "ping".
+Modul de rulare va fi:
+	./ping <count> <addr>
+
+	unde "<count>" este numărul de mesaje trimise, iar "<addr>" o adresă IP sau
+	un nume (e.g. "1.1.1.1", "google.com" etc.)
+
+În fișierul "ping.c", trebuie să completați funcția "ping". Aceasta primește
+numărul de mesaje care trebuie trimise ("count") și trebuie să le transmite, iar
+apoi să afișeze informații din răspuns, alături de timpul necesar trimiterii și
+primirii unui răspuns.
+
+Funcția primește încă două argumente, "sock" și "whereto"; nu trebuie să vă
+preocupe, ci doar să le forwardați către funcția "send_icmp".
+
+Functia "send_icmp" primește (pe lângă cei doi parametrii menționați) un header
+de icmp (definit in fișierul inclus "netinet/ip_icmp.h"), pe care trebuie să-l
+populați. Parametrul "response" este o instanță a structurii "icmp_response"
+definită în fișierul "utils.h", ce conține headerul de ICMP al răspunsului și
+timpul eclipsat (în secunde). Trebuie să printați informațiile obținute la
+stdout (puteți să vă inspirați din formatul comenzii "ping").
+
+În fișierul "utils.h" aveți, deasemena, o funcție pentru a calcula checksumul
+headerului de icmp.
+
+Pentru obține executabilul "ping", rulați "make".

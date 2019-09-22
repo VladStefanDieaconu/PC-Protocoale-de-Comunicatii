@@ -1,0 +1,88 @@
+TEMA 2 PC - Vlad-Stefan Dieaconu
+
+In realizarea acestei teme de casa am inceput de la laboratorul 8. Primul lucru
+facut a fost realizarea modificarilor pentru adaptarea laboratorului la cerintele
+temei de casa, astfel a trebuit ca fiecare subscriber sa fie apelat alaturi de
+un CLIENT_ID, care va fi un ID unic de 10 caractere, fiind primul argument pasat
+functiei la apelare. 
+In server avem deja toti ceilalti parametri de care avem nevoie la afisarea
+conectarii unui nou client, tot ce nu avem este CLIENT_ID-ul, pe care il trimit
+printr-o conexiune TCP la server inainte de a face orice alta parsare.
+
+In continuare, adaug partea de initializare a socket-ului de UDP, care este
+asemanatoare cu cea de TCP, avand mici diferente. Am urmarit structura lab-ului
+6 pentru a face corect initializarile.
+
+In server, caut sa vad daca ma aflu pe socket-ul de TCP sau pe cel de UDP pentru
+a primi datele. Daca ma aflu pe cel de UDP, atunci stiu ca urmeaza sa primesc
+mesajele, asa ca incep parsarea, stiind ca primii 50 de octeti din bufferul meu
+vor reprezenta topicul, urmatorul octet tipul de data, iar urmatorii octeti
+vor fi reprezentati de continutul mesajului propriu zis.
+
+Dupa aceasta parsare, urmeaza o alta, in functie de tipul de date. Am folosit
+int32_t si int8_t pentru a ma asigura ca tema va functiona indiferent de
+arhitectura sistemului de calcul. La inceput am avut probleme din cauza faptului
+ca foloseam tipuri dependente de sistem.
+
+In continuare trimit mesajele catre clientii abonati la acel topic, pentru acest
+lucru ma plimb prin toti clientii existenti, verific daca clientul este conectat
+si daca este abonat la topic, daca acestea sunt adevarate, trimit mesajul la
+client. 
+
+Pentru store and forwarding, verific daca valoarea lui SF este setata la 1, iar
+daca clientul nu este conectat, dar s-a abonat in trecut, in loc sa trimit
+mesajul pentru afisat il pun in vector-ul meu cu mesaje netrimise.
+Fiecare client are un astfet de vector de string-uri, in care sunt retinute
+mesajele de la topicurile la care este abonat, dar care au fost trimise cand el
+nu era conectat.
+
+Pentru abonari, mi-am declarat o structura de tip subscription, ce contine 2
+membri, reprezentati printr-un string unde memorez numele topicului si valoarea
+lui SF, pentru a stii daca store & forwarding trebuie sau nu activat.
+
+Fiecare client are un vector de astfel de subscription-uri, reprezentand topic
+-urile la care acesta este abonat. Pentru a lucra mai usor cu acestea, folosesc
+map-uri, pentru a mapa socket-ul clientului cu ID-ul clientului, respectiv
+pentru a mapa id-ul clientului cu vector-ul de subscription-uri ale acestui
+client.
+
+Pentru store & forwarding mi-am declarat un map, in care mapez fiecare client
+cu un string. Acel string il initializez atunci cand utilizatorul se conecteaza
+pentru prima data cu un string empty (constructorul). De fiecare data cand 
+se trimit mesaje la care clientul este abonat, dar acesta nu este conectat, 
+mesajele sunt adaugate in string-ul din acest map. Atunci cand clientul se
+conecteaza, trimit clientului stringul continand toate mesajele netrimise inca,
+dupa care initializez stringul cu un string empty si continui la fel ca pentru
+un client care nu avea activat store & forwarding. Am implementat aceasta parte
+dupa cum se poate vedea si in cod, insa am anumite erori. Anume, din cauza
+modului prost prin care lucrez cu mapul, am anumite out of bounds. Nu am reusit
+sa rezolv aceste erori in timp util, asa ca incarc tema in acest format, in care
+store & forwarding-ul nu este functional si da eroare, cu rugamintea sa va
+uitati peste implementare, in cazul in care se poate puncta logica din spate.
+(daca nu, asta e, sa-mi fie invatatura de minte, o sa incep tema 3 mai din timp)
+
+Fac anumite verificari pentru a ma asigura ca programul nu ajunge intr-o stare
+nedefinita: ma asigur ca fiecare comanda este data cu numarul potrivit de 
+parametri, iar fiecare parametru al fiecarei comenzi are structura necesara (ex:
+ID-ul are fix 10 caractere, valoarea lui SF (din subscribe topic SF) este o sau
+1 etc). Ma asigur ca exista topicul la care incearca un client sa se dezaboneze.
+
+Pentru coding style am folosit Vera++, un utilitar linux care iti semnaleaza 
+erorile de coding style. Acesta a fost configurat folosindu-se standardul Google
+Am fost depunctat la o alta materie pentru identare, asa ca voi lasa asta aici:
+"Use only spaces, and indent 2 spaces at a time.
+We use spaces for indentation. Do not use tabs in your code. You should set your
+editor to emit spaces when you hit the tab key."
+https://google.github.io/styleguide/cppguide.html#Spaces_vs._Tabs
+
+Pentru TCP NODELAY am folosit tips & tricks-urile de aici:
+https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
+
+Grad dificultate tema: comparativ cu tema 1, mi s-a parut foarte simpla. Cred
+ca este o tema care se poate face in maxim o zi de codat, daca ai inteles lab-urile
+6 si 8 (mai mult 8, de la 6 fiind doar liniile unde se initializa UDP-ul).
+Probleme intampinate: intelegerea laboratorului 8! Si pun mult accent pe acest
+lucru pentru ca am realizat cand m-am apucat de tema ca eu nu stiam la acel moment
+suficient de bine ce am facut la laboratorul 8 iar aceasta a fost cea mai mare
+problema pentru mine. O alta problema ar fi faptul ca nu m-am gandit sa folosesc
+int32_t de prima data iar acest lucru a reprezentat un real impediment.

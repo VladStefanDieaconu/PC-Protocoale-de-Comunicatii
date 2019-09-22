@@ -1,0 +1,60 @@
+// Vlad-Stefan Dieaconu 321CA
+
+README - TEMA 3 PC
+
+Feedback general - tema foarte interesanta, chiar mi-a placut sa o fac si mi-a
+starnit interesul. In total am stat aproximativ 6 ore pe ea.
+
+In redactarea temei am pornit de la laboratorul 10 de PC. Am folosit de asemenea
+functii din laboratorul de DNS pentru a translata domeniul site-ului intr-o
+adresa IP (necesar la task 5).
+
+Tema se reduce la a construi mesajele corect, daca ai stii de la inceput cum
+trebuie sa arate acestea, toate tema s-ar face in 1-2 ore. Am ales ca pentru
+parsarea JSON-ului sa folosesc biblioteca JSON-C, pe care am gasit-o aici
+https://github.com/json-c/json-c. Motivul este foarte simplu: este cel mai
+folosit si cunoscut tool pentru lucrul cu fisiere JSON, aproape orice search
+pe google cu "how to parse JSON" te duce la un tutorial cu un indian explicand
+cum sa instalezi si sa folosesti aceasta biblioteca.
+
+La fiecare task in parte folosesc aceasta biblioteca pentru a extrage info.
+din fiecare JSON, pe care apoi le folosesc in functie de ce am nevoie sa fac la
+respectivul task. In cod sunt regasite comentarii pentru fiecare actiune in
+parte.
+
+La task-ul 2 tot ce fac este sa extrag username-ul si parola, dupa care le
+concatenez intr-un string (folosesc aproape peste tot in tema string-uri, pentru
+usurinta in a lucra cu ele). Le trimit unei functii de compute_post_request,
+care tot ce face este sa puna datele in formatul dorit.
+
+Pentru task-ul 3, singura chestie diferita a fost faptul ca a aparut token-ul,
+a trebuit sa caut pe google cum trebuie sa lucrez cu el. La primul search, imi
+spune sa adaug inaintea tokenului "Authorization: Bearer", lucru pe care l-am
+si facut (folosind string-uri iar, because its simple).
+
+Task-ul 4 a fost cel mai simplu. Cred ca ideea acestui task era sa vada ca
+ai salvat tokenul precedent ca sa il poti refolosi si in acest mesaj.
+
+Task-ul 5 e format din 2 mesaje. Prima data trebuie sa scoti din URL-ul pe care
+il iei din JSON doar partea de domeniu. Ce fac eu este sa salvez domeniul
+site-ului intr-un string (adica pana la primul /), dupa care ce urmeaza dupa /
+(adica /data/2.5 ....) salvez intr-un alt string. Scot IP-ul care corespunde
+domeniului respectiv (folosind notiunile din laboratorul de DNS), si fac o cerere
+de GET pe IP-ul obtinut, cererii trimitandu-i un string in care am concatenat
+orasul si APPID-ul. Nu am prea inteles de ce este nevoie sa trimit un cookie
+si un token ca sa fac get-ul, pentru ca daca intru simplu pe google pe acel link
+imi returnaza direct json-ul cerut, peste care daca fac GET in linia de comanda
+imi returneaza acelasi rezultat. Oricum, pentru ca nu mergea fara cookies si
+token, le-am concatenat la mesaj si pe acestea.
+
+Al doilea mesaj de la task-ul 5 contine datele de mai sus, la care concatenez
+doar JSON-ul primit la mesajul anterior (adica fac un strstr pe caracterul { ca
+sa obtin JSON-ul, il bag intr-o functie de POST ca sa imi faca formatul dorit si
+apoi trimit cererea).
+
+Pentru coding style am folosit formatul Google, care prevede identarea cu 2
+spatii. Sunt consistent in toate sursele cu acelasi coding style.
+"Use only spaces, and indent 2 spaces at a time.
+We use spaces for indentation. Do not use tabs in your code. You should set your
+editor to emit spaces when you hit the tab key."
+https://google.github.io/styleguide/cppguide.html#Spaces_vs._Tabs

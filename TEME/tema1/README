@@ -1,0 +1,80 @@
+// Copyright (C) 2019 Vlad-Stefan Dieaconu 321 CA
+
+Mentionez ca pe local imi trece primul set de teste, va rog rulati manual in caz
+ca pe vmchecker nu va trece iar, multumesc! (20 puncte pe local)
+
+Logica abordata pentru rezolvarea temei
+Incep prin a spune ca am decis sa rezolv tema in C++, pentru a face acest lucru,
+a trebuit ca link_emulatorul sa-l declar ca sursa externa de C atunci cand pun
+directivele de include la inceputul surselor mele. Fac acest lucru folosind 
+extern C { lib.h }, asemeni modului in care includeam cod C in sursele de
+assembly sau invers, in timpul cursului de anul trecut de IOCLA.
+
+Un alt lucru foarte important pe care il folosesc in rezolvarea temei este
+faptul ca niciodata nu se corupe / modifica campul len din structura ce retine
+mesajul. Voi folosi aceasta propietate pe parcurs.
+
+#Sender:
+Imi creez o structura noua ce va reprezenta pachetele trimise de mine. In
+aceasta structura, memorez numarul secventei trimise, paritatea secventei
+trimise, si nu in ultimul rand, mesajul trimis. Pentru ca lungimea maxima a
+mesajului este de 1400, dar eu deja am 2 int-uri trimise, mesajul va fi un char
+de dimensiune 1392 (adica MSGSIZE- 2 * sizeof(int)).
+
+Primul lucru pe care il fac este sa trimit numele fisierului pe care doresc sa
+il transfer. In len retin lungimea mesajului. 
+Apoi este nevoie sa trimit lungimea fisierului, deci calculez lungimea
+fisierului folosind formula din primul laborator (cu lseek). Continutul de data
+aceasta al mesajului este lungimea fisierului. Pentru ca campul len din msg nu
+se modifica si nu se corupe niciodata, memorez de asemenea acolo lungimea
+fisierului. Astfel sunt sigur ca atunci cand voi primi datele in sender, chiar
+daca mesajul poate fi corupt, len-ul va fi mereu lungimea buna.
+
+Calculez FRAMESIZE-ul, ca fiind marimea mesajului si marimea lungimii, deci am 
+4 de la sizeof(int) si apoi 1400 pentru ca atat are MSGSIZE, deci am 1404 in
+final valoarea lui FRAMESIZE. 
+Calculez COUNT-ul folosind formula din laborator si tin cont de faptul ca 
+am mai trimis mai sus 3 mesaje, deci am 3 send-uri, si urmeaza sa mai trimit
+un mesaj (valoarea count-ului pe care il calculez acum), deci inca un send.
+In total 4 send-uri pe care le adaug la valoarea lui COUNT. 
+
+Trimit count-ul, tin iar cont de faptul ca nu se corupe niciodata campul len,
+deci in len pun valoarea lui count pentru a fi sigur ca voi primi ce trebuie.
+
+In continuare folosesc logica din laboratorul 4 (cu 3 for-uri) pentru a trimite
+continutul fisierului. Ideea din spate este ca: eu am un fisier de dimensiune X,
+dar il pot trimite in buffere de dimensiune 1400, din care trebuie sa scad 
+dimensiunile int-urilor pe care le trimit mereu la inceput (int-urile care
+retin numarul secventei si paritatea mesajului), deci pot trimite continutul
+fisierului, dar trebuie impartit in buffere de 1392. 
+La final, o sa fie un pachet incomplet, care are dimensiunea mai mica de 1392,
+pe acesta il trimit separat in alt for. 
+
+#RECEIVER:
+Structura lui este simpla, practic copiez de mai multe ori codul deja oferit
+in schelet (cam asta e ideea intr-un mod mai simplist de a explica). Ce fac este
+sa dau prima data un receive pentru prinul mesaj trimis. Eu stiu ca prima data
+am trimis numele fisierului, deci ce am primit este un nume de fisier. Urmeaza
+sa deschid fisierul in care fac scrierea mesajului primit. Acesta trebuie sa fie
+de forma recv_NumeFisierTrimis, deci la numele fisierului primit, fac un concat,
+pentru a respecta cerinta. Urmeaza sa primesc lungimea fisierului si sa o salvez
+dupa care primesc COUNT-ul calculat in receiver. Pe acesta l-am trimis in r.len,
+pentru ca dupa cum am spus campul len al structurii nu se corupe niciodata, deci
+il iau de acolo fiind sigur ca este count-ul curent. 
+Fac un while in care continui sa primesc pachete, cata vreme inca mai sunt de
+trimis (deci cat timp count-ul > 0). De fiecare data cand primesc un pachet, il
+copiez in structura mea si ii dau dupa write in fisier-ul deschis initial.
+
+Feedback tema: personal mi s-a parut o tema extrem de grea, am stat foarte mult
+timp pe ea, in ciuda punctajului mic pe care l-am luat. Consider ca atat timp
+cat inca existau erori in checker, nu ar fi trebuit postat, pentru ca multi
+dintre noi ne-am pierdut timp aiurea cu el la inceput, timp pe care ar fi
+trebui sa il alocam altor teme, in final ajungand sa aglomeram 3 teme intr-un
+weekend. De asemenea nu mi s-a parut corect ca semigrupa mea (321CAb) in
+momentul in care se postase tema nu avea facut niciun laborator de PC,
+asistentul nostru de PC fiind plecat din tara. Am recuperat toate lab-urile cu
+domnul profesor Pop ulterior, insa timpul se pierduse deja.
+Din pacate, ma simt de parca nu am invatat nimic din aceasta tema si sper ca 
+echipa de PC sa aiba o abordare diferita asupra urmatoarei teme.
+Multumesc anticipat, sper sa nu luati in nume de rau feedback-ul de mai sus si
+sa imi influenteze nota in vreun fel acest lucru.

@@ -1,0 +1,11 @@
+* PC, laborator4 *
+
+Rulare schelet de cod:
+	cd link_emulator
+	make
+	cd ..
+	make
+	./run_experiment
+
+Numărul de cadre trimise se poate modifica din lib.h - COUNT.
+Măsurare timp rulare: time ./run_experiment
